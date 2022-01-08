@@ -16,6 +16,7 @@
 
 * Home Assistant
 * Mosquitto MQTT Add-on setup
+  - Finding clear, step-by-step documentation to get MQTT up and running in HA was a painful process. For newbies, here's a great tutorial with pics! https://opencloudware.com/sht31-d-based-mqtt-sensor-for-home-assistant-with-esp32-and-toit/
 
 ### Installation & Setup
 
@@ -57,7 +58,3 @@
   - HA sets brightness to 0 when you toggle the light off, so my program saves the old percentage when turning the light off - therefore, if you toggle the light back on without setting a new percentage - in which HA sends brightness as 0 again - the program will remember your last percentage and return it to that state, as well as respond to HA with that brightness so that your HA light status shows that percent.
   - "Retain" in your yaml code saves the last message, so your light will reset to its previous state if it reboots. NOTE: On reboot, transitions default back to 1, so if your last setting was a long sunrise, it would reset to the final percent without the transition. Also, If you toggle the light from off to on, utilizing the program's saved brightness to reset… and THEN the device reboots, the retained mqtt message will report the last brightness 0 - so the light will not return to its previous state. I would be happy to update if someone can help me include a retain flag on the device’s published message, which I didn't spend too much time trying to figure out (my initial research all lead to failed attempts).
   - Have more than one dimmer device? You can set them all up in this one file, then simply change the deviceID variable before updating each device!
-
-
-
-
