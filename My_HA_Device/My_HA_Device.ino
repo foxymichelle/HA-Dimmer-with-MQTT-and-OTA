@@ -8,11 +8,9 @@ const char* mqtt_username = "username";   // HA user created for Mosquitto Broke
 const char* mqtt_password = "password";   // HA user password
 
 /********************************** MULTIPLE DEVICE SETUP  ***********************************
-Maintian one file, then simply change the DeviceID before updating to each madule.
+Maintian one file, then simply change the DeviceID before updating to each madule. */
 
-For LIGHT_1, etc, match the friendly name you will use in your HA config.yaml*/
-
-int DeviceID = 4;  // IMPORTANT: Which device will be loaded on this module? (1 = LIGHT_1, etc.)
+int DeviceID = 1;  // **** IMPORTANT ****: ID device before uploading (1 = LIGHT_1, etc.)
 
 // Edit the items below
 
@@ -46,18 +44,18 @@ For each dimmer device, define the specific values below:
 
 void setup() {
   if (DeviceID == 1) {
-    mqttName = LIGHT_1;                      // Do NOT edit (uses variable name already created)
+    mqttName = LIGHT_1;                      // Do NOT edit (uses variable name created above)
     dimmerTopic = "livingroom/dimmer";       // MQTT topic string
     dimmerCommand = "livingroom/dimmer/set"; // ALWAYS use topic string + "/set"
-    minPercent = 8;                          // Specify device min...
-    maxPercent = 58;                         // ...and max after testing
+    minPercent = 1;                          // Specify device min...
+    maxPercent = 99;                         // ...and max after testing
   }
   else if (DeviceID == 2) {
     mqttName = LIGHT_2;
     dimmerTopic = "kitchen/dimmer";
     dimmerCommand = "kitchen/dimmer/set";
-    minPercent = 8;
-    maxPercent = 58;
+    minPercent = 1;
+    maxPercent = 99;
   }
   else if (DeviceID == 3) {
     mqttName = LIGHT_3;
