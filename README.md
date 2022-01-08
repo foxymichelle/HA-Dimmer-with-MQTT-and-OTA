@@ -1,7 +1,7 @@
 <div><h3 align="center">HA-Dimmer-with-MQTT-and-OTA</h3>
 
   <p align="center">
-    A Home Assistant Dimmer the uses MQTT (Json v6)<br>and includes ArudinoOTA for updating.
+    A Home Assistant Dimmer that uses MQTT (Json v6)<br>and includes ArudinoOTA for updating.
     <br />
   </p>
 </div>
