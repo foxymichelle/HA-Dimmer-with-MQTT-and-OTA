@@ -1,6 +1,12 @@
 #include "hw_timer.h"
 
-/****************************** DIMMER SETUP *******************************************/
+/****************************** DIMMER SETUP ********************************************
+NOTE on Sunrise/Sunset long transitions: This is coded to handle increment times based on
+the set min and max brightness for the device, then a rapid fall to 0%/rapid rise to 100%,
+OR a rapid movement from 100 to max brightness when falling/0 to min brightness when rising.
+It is NOT coded to handle the full range: 0-100/100-0. I always sunrise to a mid-range 
+percent, or have the light set to a gentle dim % when it starts the sunset. */
+
 // Do not edit these variables
 
 int state = 0;                  // 0 = off; 1 = on
@@ -40,16 +46,16 @@ void dimmerLoop() {
         Serial.println("Transition complete!");
       }
       else if (inTransition == 1) {
-        if (curBrightness == maxB) {
+        if (curBrightness == maxB) { // Rapid finish from maxB to 100%, which will also end cycle
           inTransition = 0;
           tarBrightness = NewBrightness;
         }
-        else {
+        else {                       // ...or contine one step at a time
           ++tarBrightness;
         }
       }
       else if (inTransition == 2) {
-        if (curBrightness == minB) {
+        if (curBrightness == minB) { // Repeat, but rapid finish from minB to 0%
           inTransition = 0;
           tarBrightness = NewBrightness;
         }
@@ -71,46 +77,42 @@ void dimmerTrigger() {
   Serial.println("Set Light Data:");
   Serial.print("Percent: ");Serial.print(Percent);Serial.print("%");
   if (Percent >= 1) {
-    OldBrightness = NewBrightness;
-    if (Percent <= 99) {
-      NewBrightness = ((maxB-minB)*Percent/100)+minB;  // Recalculate target brightness based
-    }                                                  // on the user defined min and max
+    OldBrightness = NewBrightness;  // Save brightness for toggle off/on to override HA on at 0
   }
   Serial.print(", New Target: ");Serial.print(NewBrightness);
-  if (NewBrightness == 100) {
+  if (Percent == 100) {             // Calculate transtion time to 100% using maxB
     incrementT = transitionTime*1000/(curBrightness-maxB);
   }
-  else if (NewBrightness == 0) {
+  else if (Percent == 0) {          // Calculate time to 0% using minB
     incrementT = transitionTime*1000/(curBrightness-minB);
-    inTransition = 2;
-    tarBrightness = --curBrightness;
   }
-  else {
+  else {            // Calculate 1-99% new brightness based on min/max, then transition time
+    NewBrightness = ((maxB-minB)*Percent/100)+minB;
     incrementT = transitionTime*1000/(curBrightness-NewBrightness);
-    if (incrementT < 1) {
-      incrementT = abs(incrementT);
-      inTransition = 1;
-      if (curBrightness == 0) {
-        tarBrightness = minB;
-      }
-      else {
-        tarBrightness = ++curBrightness;
-      }
+  }
+  if (incrementT < 0) {             // Megative transition time = brightness rising
+    incrementT = abs(incrementT);   // Make transition time positive
+    inTransition = 1;
+    if (curBrightness == 0) {       // Jump to minB from 0, then use transition time...
+      tarBrightness = minB;
     }
     else {
-      inTransition = 2;
-      if (curBrightness == 255) {
-        tarBrightness = maxB;
-      }
-      else {
-        tarBrightness = --curBrightness;
-      }
+      ++tarBrightness;              // ...or start rising from current percent
+    }
+  }
+  else {
+    inTransition = 2;
+    if (curBrightness == 255) {
+      tarBrightness = maxB;
+    }
+    else {
+      --tarBrightness;
     }
   }
   Serial.print(", Transition incrementT: ");Serial.println(incrementT);
-  time_now = millis();
-  SkipStart = 1;
-  dimTimerISR();
+  time_now = millis();               // Start first transition time timer
+  SkipStart = 1;                     // to avoid flicker in dimTimerISR
+  dimTimerISR();                     // Start process
 }
 
 /********************************* DIMMER ISRs ******************************************/
