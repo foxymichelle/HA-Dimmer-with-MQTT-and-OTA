@@ -6,6 +6,8 @@
   </p>
 </div>
 
+Update to dimmer.iso on 1/15 - fixed errors that caused odd responses, such as dropping to 0 when dimmer, jumping to 100, then lowing to dim, etc.
+
 ### Materials
 
 * Wemos D1 Mini with ESP8266
