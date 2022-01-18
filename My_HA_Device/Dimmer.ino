@@ -41,12 +41,12 @@ void dimmerLoop() {
   if (inTransition != 0) {
     if(millis() > time_now + incrementT){
       time_now = millis();
-      if (curBrightness == NewBrightness) {
+      if (curBrightness >= NewBrightness-1 && curBrightness <= NewBrightness+1) {
         inTransition = 0;
         Serial.println("Transition complete!");
       }
       else if (inTransition == 1) {
-        if (curBrightness == maxB) { // Rapid finish from maxB to 100%, which will also end cycle
+        if (curBrightness >= maxB) { // Rapid finish from maxB to 100%, which will also end cycle
           inTransition = 0;
           tarBrightness = NewBrightness;
         }
@@ -55,7 +55,7 @@ void dimmerLoop() {
         }
       }
       else if (inTransition == 2) {
-        if (curBrightness == minB) { // Repeat, but rapid finish from minB to 0%
+        if (curBrightness <= minB) { // Repeat, but rapid finish from minB to 0%
           inTransition = 0;
           tarBrightness = NewBrightness;
         }
