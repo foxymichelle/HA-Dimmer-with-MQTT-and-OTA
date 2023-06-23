@@ -35,7 +35,7 @@ bool connectBus = true;
 /****************************** SETUP & LOOP *******************************************/
 
 void busSetup() {
-  if (DeviceID != 0) {            /****** Wrap setup & loop to isolate per device ******/
+  if (DeviceID != 0) {            /****** Wrap setup & loop to isolate per device; ex (DeviceID == 1) if bus is on device 1 only ******/
     Wire.begin(sdaPin, sclPin);
     if (aht10.begin()) {
       DEBUGLN(F("AHT10 OK"));
@@ -55,46 +55,47 @@ void aht10Reset() {
 }
 
 void busLoop() {
-  if (currentMillis - lastRead >= ReadInterval) {
-    if (connectBus) {
-      busSetup();
-    }
-    else {
-      lastRead = millis();
-      if (readToggle == 0) {
-        readToggle = 1;
-        // yield();
-        float Humi = aht10.readHumidity();
-        CheckHumi = Humi;
-        DEBUG("Humidity: "); DEBUG(CheckHumi); DEBUGLN(" \%");
+  if (DeviceID != 0) { 
+    if (currentMillis - lastRead >= ReadInterval) {
+      if (connectBus) {
+        busSetup();
       }
       else {
-        readToggle = 0;
-        ++IntervalC;
-        // yield();
-        float Temp = aht10.readTemperature();
-        CheckTemp = (Temp * 18.0)/ 10.0 + 32.0;     // Convert C to F
-        DEBUG("Temp: "); DEBUG(CheckTemp); DEBUGLN(" F");
-        if (CheckTemp>SavedTemp+.1 || CheckTemp<SavedTemp-.1 || CheckHumi>SavedHumi+.1 || CheckHumi<SavedHumi-.1 || IntervalC == 8) {
-          IntervalC = 0;
-          if (CheckTemp < 150 || CheckTemp > 10) {  // If using sensor graph in HA, the extreme 500 degree error
-            SavedTemp = CheckTemp;                  // outlier destroys the graph view, so don't send that value.
-            SavedHumi = CheckHumi;
-          }
-          else {
-            if (SavedTemp < 150) {
-              SavedTemp = SavedTemp - 10; // This sudden drop 10 degrees is an obvious error to see on the HA graph.
+        lastRead = millis();
+        if (readToggle == 0) {
+          readToggle = 1;
+          // yield();
+          float Humi = aht10.readHumidity();
+          CheckHumi = Humi;
+          DEBUG("Humidity: "); DEBUG(CheckHumi); DEBUGLN(" \%");
+        }
+        else {
+          readToggle = 0;
+          ++IntervalC;
+          // yield();
+          float Temp = aht10.readTemperature();
+          CheckTemp = (Temp * 18.0)/ 10.0 + 32.0;     // Convert C to F
+          DEBUG("Temp: "); DEBUG(CheckTemp); DEBUGLN(" F");
+          if (CheckTemp>SavedTemp+.1 || CheckTemp<SavedTemp-.1 || CheckHumi>SavedHumi+.1 || CheckHumi<SavedHumi-.1 || IntervalC == 8) {
+            IntervalC = 0;
+            if (CheckTemp < 150 || CheckTemp > 10) {  // If using sensor graph in HA, the extreme 500 degree error
+              SavedTemp = CheckTemp;                  // outlier destroys the graph view, so don't send that value.
+              SavedHumi = CheckHumi;                  // *** IT'S STILL SENDING, SO FIX ON NEXT UPDATE! ***
             }
             else {
-              SavedTemp = 55;             // If error is on boot/reboot
+              if (SavedTemp < 150) {
+                SavedTemp = SavedTemp - 10; // This sudden drop 10 degrees is an obvious error to see on the HA graph.
+              }
+              else {
+                SavedTemp = 55;             // If error is on boot/reboot
+              }
             }
+            sendBus = true;
           }
-          sendBus = true;
         }
       }
     }
   }
-}
 
 /************************************ MQTT SEND DATA *****************************************/
 
