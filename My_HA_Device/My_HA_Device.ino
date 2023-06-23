@@ -106,15 +106,15 @@ void setup() {
   }
   // Add to or remove the above "else if..." segements for each device as needed
   wifiSetup();
-  busSetup();         // Be sure to cancel this if you are not using AHT10 or other bus devices!
-  // sensorSetup();   // I do not have PIR connected, so setup is skipped
+  busSetup();         // It's okay to leve these running because you can identify which devices
+  sensorSetup();      // need this setup based on DeviceID - See first if in setup and loop functions in I2C.ino and Sensor.ino
   dimmerSetup();      // Start timers in dimmerSetup last (this must run last in sequence)
 }
 
 void loop() {
   currentMillis = millis();
   wifiLoop();
-  busLoop();         // Be sure to cancel this if you are not using AHT10 or other bus devices!
+  busLoop();         // Cancel this if you're not using bus devices or use device ID wrapper if only some are using it
   dimmerLoop();
-  // sensorLoop();   // I do not have PIR connected, so loop is skipped
+  // sensorLoop();   // I do not have PIR connected to any device, so loop is skipped, but the loop is also wrapped in a device ID
 }
