@@ -106,15 +106,15 @@ void setup() {
   }
   // Add to or remove the above "else if..." segements for each device as needed
   wifiSetup();
-  busSetup();
+  busSetup();         // Be sure to cancel this if you are not using AHT10 or other bus devices!
   // sensorSetup();   // I do not have PIR connected, so setup is skipped
-  dimmerSetup();    // Start timers in dimmerSetup last (this must run last in sequence)
+  dimmerSetup();      // Start timers in dimmerSetup last (this must run last in sequence)
 }
 
 void loop() {
   currentMillis = millis();
   wifiLoop();
-  busLoop();
+  busLoop();         // Be sure to cancel this if you are not using AHT10 or other bus devices!
   dimmerLoop();
   // sensorLoop();   // I do not have PIR connected, so loop is skipped
 }
