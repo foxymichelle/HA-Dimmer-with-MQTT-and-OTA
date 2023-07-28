@@ -50,7 +50,7 @@ volatile byte dimState[] = {1};        // 0 = OFF; 1 = ON
 volatile int dimCounter[] = {0};       // Counts each dimTimerISR trigger; used by dimPulse
 volatile byte dimPulse[] = {1};        // Set to inverse of % brightness to determine dimCounter counts to create PWM intervals
 
-#define CONFIG_ESP_TIMER_INTERRUPT_LEVEL  3
+#define CONFIG_ESP_TIMER_INTERRUPT_LEVEL  3  // Set timer accuracy to highest priority level
 void ICACHE_RAM_ATTR zcDetectISR ();
 void ICACHE_RAM_ATTR dimTimerISR ();
 
