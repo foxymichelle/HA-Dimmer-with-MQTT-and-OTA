@@ -159,9 +159,6 @@ void reconnect() {
     client.subscribe(dimmerCommand);
     client.subscribe(deviceTopic);
     client.subscribe(deviceCommand);
-    if (DeviceID == 1 || DeviceID == 4) {
-      client.subscribe(aht10Topic);
-    }
   }
   else {
     DEBUGLN("Connection to MQTT Broker failed...");
