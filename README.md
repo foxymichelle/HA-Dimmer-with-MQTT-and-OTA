@@ -42,6 +42,7 @@ Added "My_HA_Dimmer_8266" for 8266 devices dedicated to the dimmer (no sensors).
           retain: true
    ```
 NOTE: This yaml is working as of Jan 2025, although there are warnings that I ignore after schema, brightness, and supported_color_modes. You can change the name to your own friendly anme and the unique id, plus change your topics to match whatever you used in your arduino code.
+
 6. Test your device using the HA interface. Find your ideal 1-99% range, update the file, then reflash your device.
 
 ### Notes & Features
