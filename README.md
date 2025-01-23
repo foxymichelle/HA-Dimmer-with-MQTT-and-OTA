@@ -28,17 +28,20 @@ Added "My_HA_Dimmer_8266" for 8266 devices dedicated to the dimmer (no sensors).
 4. Flash to your device. Once this is done, you can use select the device in your port list and update OTA.
 5. In Home Assistant, add the following to your `config.yaml`
    ```yaml
-   light:
-    - platform: mqtt
-      schema: json
-      name: Your Device Name
-      state_topic: "livingroom/dimmer"
-      command_topic: "livingroom/dimmer/set"
-      brightness: true
-      color_mode: true
-      supported_color_modes: ["brightness"]
-      retain: true
+    mqtt:
+      light:
+        - schema: json
+          name: String
+          unique_id: string_mqtt
+          state_topic: "livingroom/dimmer"
+          command_topic: "livingroom/dimmer/set"
+          availability:
+            - topic: "livingroom/availablity"
+          brightness: true
+          supported_color_modes: ["brightness"]
+          retain: true
    ```
+NOTE: This yaml is working as of Jan 2025, although there are warnings that I ignore after schema, brightness, and supported_color_modes. You can change the name to your own friendly anme and the unique id, plus change your topics to match whatever you used in your arduino code.
 6. Test your device using the HA interface. Find your ideal 1-99% range, update the file, then reflash your device.
 
 ### Notes & Features
